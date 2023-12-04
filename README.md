@@ -14,3 +14,7 @@ App uses [gow](https://github.com/mitranim/gow) to reload project automaticaly
 App uses native default 'html/template' library. But there are alternatives like:
 
 - [plush](https://github.com/gobuffalo/plush) - inspired by Ruby on Rails
+
+## Templates
+
+App uses 'embed' native package to build templates as file system (FS). So the application can read them from the binary directly.
