@@ -1,1 +1,15 @@
+{{define "page"}}
+
 <h1>Register Product</h1>
+
+<ul>
+    {{range .}}
+        {{template "product" .}}
+    {{end}}
+</ul>
+
+{{ end }}
+
+{{ define "product" }}
+<li><b>{{.Name}}</b> | Gtin: {{.Gtin}}</li>
+{{ end }}

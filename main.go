@@ -17,11 +17,11 @@ func main() {
 
 	var tpl views.Template
 
-	tpl = views.MustParseFS(templates.FS, "home.gohtml")
+	tpl = views.MustParseFS(templates.FS, "layout-page.gohtml", "home.gohtml")
 	r.Get("/", controllers.StaticHandler(tpl))
 
-	tpl = views.MustParseFS(templates.FS, "product.gohtml")
-	r.Get("/product", controllers.StaticHandler(tpl))
+	tpl = views.MustParseFS(templates.FS, "layout-page.gohtml", "product.gohtml")
+	r.Get("/product", controllers.ProductHandler(tpl))
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) { http.Error(w, "Page not found", http.StatusNotFound) })
 
