@@ -2,13 +2,11 @@ package controllers
 
 import (
 	"net/http"
-
-	"github.com/samuelralmeida/product-catalog-api/views"
 )
 
 type User struct {
 	Templates struct {
-		New views.Template
+		New Template
 	}
 }
 
