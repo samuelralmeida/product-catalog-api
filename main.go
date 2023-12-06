@@ -23,8 +23,10 @@ func main() {
 	tpl = views.MustParseFS(templates.FS, "layout-page.gohtml", "product.gohtml")
 	r.Get("/product", controllers.ProductHandler(tpl))
 
-	tpl = views.MustParseFS(templates.FS, "layout-page.gohtml", "signup.gohtml")
-	r.Get("/signup", controllers.ProductHandler(tpl))
+	userController := controllers.User{}
+	userController.Templates.New = views.MustParseFS(templates.FS, "layout-page.gohtml", "signup.gohtml")
+
+	r.Get("/signup", userController.New)
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) { http.Error(w, "Page not found", http.StatusNotFound) })
 
