@@ -27,3 +27,11 @@ App uses [pgx](https://github.com/jackc/pgx) driver to connect to Postgres.
 
 - Each ORM is unique and needs to be learned. Once you know SQL, you can apply 99% of that knowledge anywhere.
 - Once you learn an ORM you only know that specific ORM.
+- It's easier to optimize when necessary.
+
+## Authentication
+
+App does not use third party authentication because the own authentication is cheaper and I can understand and practice security details.
+
+- App uses [bcrypt](https://en.wikipedia.org/wiki/Bcrypt) hash function with salt to store password. The hash collisions are very unlikely.
+- The salt is generate by bcrypt package and it's in hash result. Because of that, we can change the cost of hash function that the package will know how to compare hashes and passwords.

@@ -3,24 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
-	"fmt"
 )
-
-type Config struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	Database string
-	SSLMode  string
-}
-
-func (cfg *Config) PostgresUrl() string {
-	return fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/%s?sslmode=%s",
-		cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Database, cfg.SSLMode,
-	)
-}
 
 type Query interface {
 	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)

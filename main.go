@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -10,34 +8,28 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/samuelralmeida/product-catalog-api/controllers"
 	"github.com/samuelralmeida/product-catalog-api/database"
+	"github.com/samuelralmeida/product-catalog-api/database/postgres"
+	"github.com/samuelralmeida/product-catalog-api/models"
 	"github.com/samuelralmeida/product-catalog-api/templates"
 	"github.com/samuelralmeida/product-catalog-api/views"
-
-	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func main() {
-	cfg := database.Config{
-		Host:     "localhost",
-		Port:     "5432",
-		User:     "postgres",
-		Password: "password",
-		Database: "catalog",
-		SSLMode:  "disable",
-	}
-
-	conn, err := sql.Open("pgx", cfg.PostgresUrl())
+	conn, err := postgres.Open(postgres.DefaultConfig())
 	if err != nil {
 		panic(err)
 	}
+	defer conn.Close()
 
 	db := database.NewDB(conn)
+	us := models.UserService{DB: db}
 
-	err = db.PingContext(context.Background())
+	user, err := us.Create("samuel2@email.com", "password")
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
+
+	fmt.Printf("%+v\n", user)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
