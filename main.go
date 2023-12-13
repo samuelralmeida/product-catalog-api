@@ -22,14 +22,7 @@ func main() {
 	defer conn.Close()
 
 	db := database.NewDB(conn)
-	us := models.UserService{DB: db}
-
-	user, err := us.Create("samuel2@email.com", "password")
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("%+v\n", user)
+	userService := models.UserService{DB: db}
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -42,11 +35,14 @@ func main() {
 	tpl = views.MustParseFS(templates.FS, "layout-page.gohtml", "product.gohtml")
 	r.Get("/product", controllers.ProductHandler(tpl))
 
-	userController := controllers.User{}
+	userController := controllers.User{UserService: &userService}
 	userController.Templates.New = views.MustParseFS(templates.FS, "layout-page.gohtml", "signup.gohtml")
+	userController.Templates.Signin = views.MustParseFS(templates.FS, "layout-page.gohtml", "signin.gohtml")
 
 	r.Get("/signup", userController.New)
 	r.Post("/users", userController.Create)
+	r.Get("/signin", userController.SignIn)
+	r.Post("/signin", userController.ProcessSignIn)
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) { http.Error(w, "Page not found", http.StatusNotFound) })
 

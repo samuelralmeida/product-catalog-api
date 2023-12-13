@@ -34,22 +34,32 @@ func (us *UserService) Create(email, password string) (*User, error) {
 		PasswordHash: passwordHash,
 	}
 
-	tx, err := us.DB.BeginTx(context.Background(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("beging transaction: %w", err)
-	}
-
-	row := tx.QueryRowContext(context.Background(), insertUserQuery, email, passwordHash)
+	row := us.DB.QueryRowContext(context.Background(), insertUserQuery, email, passwordHash)
 	err = row.Scan(&user.ID)
 	if err != nil {
-		tx.Rollback()
 		return nil, fmt.Errorf("create user: %w", err)
 	}
-	tx.Commit()
 
 	return &user, nil
 }
 
-func (us *UserService) Update(user *User) error {
-	return nil
+const selectUserByEmailQuery = `SELECT id, password_hash FROM users WHERE email = $1`
+
+func (us *UserService) Authenticate(email, password string) (*User, error) {
+	user := User{
+		Email: strings.ToLower(email),
+	}
+
+	row := us.DB.QueryRowContext(context.Background(), selectUserByEmailQuery, user.Email)
+	err := row.Scan(&user.ID, &user.PasswordHash)
+	if err != nil {
+		return nil, fmt.Errorf("authenticate user: %w", err)
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
+	if err != nil {
+		return nil, fmt.Errorf("password invalid: %w", err)
+	}
+
+	return &user, nil
 }
