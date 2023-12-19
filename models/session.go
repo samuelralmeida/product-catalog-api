@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"crypto/sha256"
-	"database/sql"
 	"encoding/base64"
 	"fmt"
 
@@ -56,16 +55,8 @@ func (ss *SessionService) Create(userID uint) (*Session, error) {
 		TokenHash: ss.hash(token),
 	}
 
-	// TODO: mudar para query "insert into on conflict"
-	row := ss.DB.QueryRowContext(context.Background(), updateSessionQuery, session.UserID, session.TokenHash)
+	row := ss.DB.QueryRowContext(context.Background(), insertOrUpdateSessionQuery, session.UserID, session.TokenHash)
 	err = row.Scan(&session.ID)
-	if err == sql.ErrNoRows {
-		row = ss.DB.QueryRowContext(context.Background(), insertSessionQuery, session.UserID, session.TokenHash)
-		err = row.Scan(&session.ID)
-		if err != nil {
-			return nil, fmt.Errorf("insert session hash: %w", err)
-		}
-	}
 	if err != nil {
 		return nil, fmt.Errorf("update session hash: %w", err)
 	}
@@ -78,21 +69,9 @@ func (ss *SessionService) User(token string) (*User, error) {
 
 	var user User
 	row := ss.DB.QueryRowContext(context.Background(), selectSessionQuery, tokenHash)
-
-	// TODO: fazer em uma única query usando join
-	err := row.Scan(&user.ID)
+	err := row.Scan(&user.ID, &user.Email, &user.PasswordHash)
 	if err != nil {
 		return nil, fmt.Errorf("select session: %w", err)
-	}
-
-	row = ss.DB.QueryRowContext(
-		context.Background(),
-		"SELECT email, password_hash FROM users WHERE id = $1",
-		user.ID,
-	)
-	err = row.Scan(&user.Email, &user.PasswordHash)
-	if err != nil {
-		return nil, fmt.Errorf("select user by session: %w", err)
 	}
 
 	return &user, nil
@@ -113,8 +92,7 @@ func (ss *SessionService) hash(token string) string {
 }
 
 const (
-	insertSessionQuery = "INSERT INTO sessions (user_id, token_hash) VALUES ($1, $2) RETURNING id"
-	updateSessionQuery = "UPDATE sessions SET token_hash = $2 WHERE user_id = $1 RETURNING id"
-	selectSessionQuery = "SELECT user_id FROM sessions WHERE token_hash = $1"
-	deleteSessionQuery = "DELETE FROM sessions WHERE token_hash = $1"
+	insertOrUpdateSessionQuery = "INSERT INTO sessions (user_id, token_hash) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET token_hash = $2 RETURNING id"
+	selectSessionQuery         = "SELECT u.id, u.email, u.password_hash FROM users u JOIN sessions s ON u.id = s.user_id WHERE s.token_hash = $1"
+	deleteSessionQuery         = "DELETE FROM sessions WHERE token_hash = $1"
 )
