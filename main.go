@@ -32,6 +32,9 @@ func main() {
 	csrfMiddleware := csrf.Protect([]byte("32-byte-long-auth-key"))
 	r.Use(csrfMiddleware)
 
+	umw := controllers.UserMiddleware{SessionService: &sessionService}
+	r.Use(umw.SetUser)
+
 	var tpl views.Template
 
 	tpl = views.MustParseFS(templates.FS, "layout-page.gohtml", "home.gohtml")
@@ -49,7 +52,11 @@ func main() {
 	r.Get("/signin", userController.SignIn)
 	r.Post("/signin", userController.ProcessSignIn)
 	r.Post("/signout", userController.ProcessSignOut)
-	r.Get("/users/me", userController.CurrentUser)
+
+	r.Route("/users/me", func(r chi.Router) {
+		r.Use(umw.RequireUser)
+		r.Get("/", userController.CurrentUser)
+	})
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) { http.Error(w, "Page not found", http.StatusNotFound) })
 

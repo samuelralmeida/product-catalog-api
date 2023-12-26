@@ -10,6 +10,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/csrf"
+	"github.com/samuelralmeida/product-catalog-api/context"
+	"github.com/samuelralmeida/product-catalog-api/models"
 )
 
 func Must(t Template, err error) Template {
@@ -26,7 +28,10 @@ func MustParseFS(fs fs.FS, pattern ...string) Template {
 	tpl = tpl.Funcs(
 		template.FuncMap{
 			"csrfField": func() (template.HTML, error) {
-				return "", fmt.Errorf("csrfField bit implemented")
+				return "", fmt.Errorf("csrfField not implemented")
+			},
+			"currentUser": func() (template.HTML, error) {
+				return "", fmt.Errorf("currentUser not implemented")
 			},
 		},
 	)
@@ -51,7 +56,8 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 
 	tpl = tpl.Funcs(
 		template.FuncMap{
-			"csrfField": func() template.HTML { return csrf.TemplateField(r) },
+			"csrfField":   func() template.HTML { return csrf.TemplateField(r) },
+			"currentUser": func() *models.User { return context.User(r.Context()) },
 		},
 	)
 

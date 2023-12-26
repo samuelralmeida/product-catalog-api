@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/csrf"
+	"github.com/samuelralmeida/product-catalog-api/context"
 	"github.com/samuelralmeida/product-catalog-api/models"
 )
 
@@ -84,19 +85,8 @@ func (u User) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u User) CurrentUser(w http.ResponseWriter, r *http.Request) {
-	token, err := readCookie(r, cookieSession)
-	if err != nil {
-		fmt.Println(err)
-		http.Redirect(w, r, "/signin", http.StatusFound)
-		return
-	}
-	user, err := u.SessionService.User(token)
-	if err != nil {
-		fmt.Println(err)
-		http.Redirect(w, r, "/signin", http.StatusFound)
-		return
-	}
-	fmt.Fprintf(w, "Current user: %v\n", user)
+	user := context.User(r.Context())
+	fmt.Fprintf(w, "Current user: %v\n", user.Email)
 }
 
 func (u User) ProcessSignOut(w http.ResponseWriter, r *http.Request) {

@@ -81,7 +81,11 @@ Pay attention to the order of migrations files. Working in groupssome migrations
 
 ### Goose as package
 
-App use goose CLI, but there is a package that allow generate a binary to run migrations inside the code. `go run cmd/migration/main.go`
+App uses goose CLI, but there is a package that allow generate a binary to run migrations inside the code. `go run cmd/migration/main.go`
+
+## Context
+
+App uses context to set, get and require user data. There is a middleware to handle this. That way, we can know request's user at any time by getting it from context.
 
 ## Other securities apects (not implemented in this software)
 
