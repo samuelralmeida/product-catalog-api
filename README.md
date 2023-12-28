@@ -87,6 +87,20 @@ App uses goose CLI, but there is a package that allow generate a binary to run m
 
 App uses context to set, get and require user data. There is a middleware to handle this. That way, we can know request's user at any time by getting it from context.
 
+## Env
+
+App uses [godotenv](github.com/joho/godotenv) to load envs from .env file
+
+## Email
+
+### Reset password
+
+Generate token and url to return to website and reset password. These token is verified only once, so the same token can't reuse
+
+### Smtp
+
+App uses [Mailtrap](https://mailtrap.io) to send reset password email.
+
 ## Other securities apects (not implemented in this software)
 
 - Block ip that make a lot of invalid requests

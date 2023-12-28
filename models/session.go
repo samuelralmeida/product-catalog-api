@@ -52,7 +52,7 @@ func (ss *SessionService) Create(userID uint) (*Session, error) {
 	session := Session{
 		UserID:    userID,
 		Token:     token,
-		TokenHash: ss.hash(token),
+		TokenHash: hash(token),
 	}
 
 	row := ss.DB.QueryRowContext(context.Background(), insertOrUpdateSessionQuery, session.UserID, session.TokenHash)
@@ -65,7 +65,7 @@ func (ss *SessionService) Create(userID uint) (*Session, error) {
 }
 
 func (ss *SessionService) User(token string) (*User, error) {
-	tokenHash := ss.hash(token)
+	tokenHash := hash(token)
 
 	var user User
 	row := ss.DB.QueryRowContext(context.Background(), selectSessionQuery, tokenHash)
@@ -78,7 +78,7 @@ func (ss *SessionService) User(token string) (*User, error) {
 }
 
 func (ss *SessionService) Delete(token string) error {
-	tokenHash := ss.hash(token)
+	tokenHash := hash(token)
 	_, err := ss.DB.ExecContext(context.Background(), deleteSessionQuery, tokenHash)
 	if err != nil {
 		return fmt.Errorf("delete session: %w", err)
@@ -86,7 +86,7 @@ func (ss *SessionService) Delete(token string) error {
 	return nil
 }
 
-func (ss *SessionService) hash(token string) string {
+func hash(token string) string {
 	tokenHash := sha256.Sum256([]byte(token))
 	return base64.URLEncoding.EncodeToString(tokenHash[:])
 }

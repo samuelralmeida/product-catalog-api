@@ -5,13 +5,16 @@ import (
 	"fmt"
 
 	"github.com/samuelralmeida/product-catalog-api/database/postgres"
+	"github.com/samuelralmeida/product-catalog-api/env"
 	"github.com/samuelralmeida/product-catalog-api/migrations"
 
 	"github.com/pressly/goose/v3"
 )
 
 func main() {
-	conn, err := postgres.Open(postgres.DefaultConfig())
+	config := env.Load()
+
+	conn, err := postgres.Open(postgres.EnvConfig(config))
 	if err != nil {
 		panic(err)
 	}
