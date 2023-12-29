@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/samuelralmeida/product-catalog-api/env"
 )
 
 type Config struct {
@@ -16,14 +17,14 @@ type Config struct {
 	SSLMode  string
 }
 
-func DefaultConfig() Config {
+func EnvConfig(config *env.Config) Config {
 	return Config{
-		Host:     "localhost",
-		Port:     "5432",
-		User:     "postgres",
-		Password: "password",
-		Database: "catalog",
-		SSLMode:  "disable",
+		Host:     config.Postgres.Host,
+		Port:     config.Postgres.Port,
+		User:     config.Postgres.User,
+		Password: config.Postgres.Password,
+		Database: config.Postgres.Database,
+		SSLMode:  config.Postgres.SSLMode,
 	}
 }
 

@@ -66,6 +66,46 @@ Read more: www.owasp.org/index.php/Insufficient_Session-ID_Length
 
 The first app version has a sesstion table that allows only one session for each user.
 
+## Migration
+
+[goose](https://github.com/pressly/goose) handles the app migrations. It's a CLI installed using `make install-binaries`. If you're using asdf to manage go version, remember to reshim your go version after the installation.
+
+`goose -dir migrations create {name_of_file} [sql|go]` -> create migration file
+`goose -dir migrations postgres "{postgres_dns}" status` -> show migration process status
+`goose -dir migrations postgres "{postgres_dns}" up` -> run pending migrations
+`goose -dir migrations postgres "{postgres_dns}" down` -> rollback last migrations executed
+`goose -dir migrations postgres "{postgres_dns}" reset` -> rollback all migrations executed
+
+
+Pay attention to the order of migrations files. Working in groupssome migrations can be behind the current schema version. An approach to solve it is use sequencial numbers and not timestamp. `goose fix` rename files automatically.
+
+### Goose as package
+
+App uses goose CLI, but there is a package that allow generate a binary to run migrations inside the code. `go run cmd/migration/main.go`
+
+## Context
+
+App uses context to set, get and require user data. There is a middleware to handle this. That way, we can know request's user at any time by getting it from context.
+
+## Env
+
+App uses [godotenv](github.com/joho/godotenv) to load envs from .env file
+
+## Email
+
+App can send email to users
+
+### Reset password
+
+Generate token and url to return to website and reset password. These token is verified only once, so the same token can't reuse
+
+### Smtp
+
+App uses [Mailtrap](https://mailtrap.io) to send reset password email.
+
+## Errors
+
+App separetes public errors which are erros that can be shared with users; and internal erros which are errors to log and trace application.
 
 ## Other securities apects (not implemented in this software)
 
