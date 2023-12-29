@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/csrf"
 	"github.com/samuelralmeida/product-catalog-api/context"
+	"github.com/samuelralmeida/product-catalog-api/errors"
 	"github.com/samuelralmeida/product-catalog-api/models"
 )
 
@@ -39,12 +40,18 @@ func (u User) Create(w http.ResponseWriter, r *http.Request) {
 	// TODO: use go-playground/form to parse data request
 	// TODO: use go-playground/validator to validate data
 
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-	user, err := u.UserService.Create(email, password)
+	var data struct {
+		Email    string
+		Password string
+	}
+	data.Email = r.FormValue("email")
+	data.Password = r.FormValue("password")
+	user, err := u.UserService.Create(data.Email, data.Password)
 	if err != nil {
-		fmt.Println(err)
-		http.Error(w, "something wrong", http.StatusInternalServerError)
+		if errors.Is(err, models.ErrEmailTaken) {
+			err = errors.Public(err, "That email address is already used")
+		}
+		u.Templates.Signup.Execute(w, r, data, err)
 		return
 	}
 	session, err := u.SessionService.Create(user.ID)

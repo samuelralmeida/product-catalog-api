@@ -93,6 +93,8 @@ App uses [godotenv](github.com/joho/godotenv) to load envs from .env file
 
 ## Email
 
+App can send email to users
+
 ### Reset password
 
 Generate token and url to return to website and reset password. These token is verified only once, so the same token can't reuse
@@ -100,6 +102,10 @@ Generate token and url to return to website and reset password. These token is v
 ### Smtp
 
 App uses [Mailtrap](https://mailtrap.io) to send reset password email.
+
+## Errors
+
+App separetes public errors which are erros that can be shared with users; and internal erros which are errors to log and trace application.
 
 ## Other securities apects (not implemented in this software)
 
