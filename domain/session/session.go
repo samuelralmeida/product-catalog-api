@@ -2,11 +2,10 @@ package session
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/base64"
 	"fmt"
 
 	"github.com/samuelralmeida/product-catalog-api/entity"
+	"github.com/samuelralmeida/product-catalog-api/internal/hash"
 	"github.com/samuelralmeida/product-catalog-api/internal/rand"
 )
 
@@ -16,11 +15,11 @@ const (
 
 type SessionRepository interface {
 	Save(ctx context.Context, user *entity.User, session *entity.Session) error
-	GetUserByToken(ctx context.Context, tokenHash string) (*entity.User, error)
+	GetUserByTokenHash(ctx context.Context, tokenHash string) (*entity.User, error)
 	Delete(ctx context.Context, tokenHash string) error
 }
 
-type SessionUserCases struct {
+type UseCases struct {
 	Repository SessionRepository
 	// BytesPerToken is used to determine ho wmany bytes to use when generating
 	// each sessio token. If this value is not set or is less than the
@@ -28,7 +27,7 @@ type SessionUserCases struct {
 	BytesPerToken int
 }
 
-func (suc *SessionUserCases) Create(ctx context.Context, user *entity.User) (*entity.Session, error) {
+func (suc *UseCases) Create(ctx context.Context, user *entity.User) (*entity.Session, error) {
 	bytesPerToken := suc.BytesPerToken
 	if bytesPerToken < MinBytesPerToken {
 		bytesPerToken = MinBytesPerToken
@@ -42,7 +41,7 @@ func (suc *SessionUserCases) Create(ctx context.Context, user *entity.User) (*en
 	session := &entity.Session{
 		UserID:    user.ID,
 		Token:     token,
-		TokenHash: hash(token),
+		TokenHash: hash.Sha256(token),
 	}
 
 	err = suc.Repository.Save(ctx, user, session)
@@ -52,17 +51,12 @@ func (suc *SessionUserCases) Create(ctx context.Context, user *entity.User) (*en
 	return session, err
 }
 
-func (suc *SessionUserCases) User(ctx context.Context, token string) (*entity.User, error) {
-	tokenHash := hash(token)
-	return suc.Repository.GetUserByToken(ctx, tokenHash)
+func (suc *UseCases) User(ctx context.Context, token string) (*entity.User, error) {
+	tokenHash := hash.Sha256(token)
+	return suc.Repository.GetUserByTokenHash(ctx, tokenHash)
 }
 
-func (suc *SessionUserCases) Delete(ctx context.Context, token string) error {
-	tokenHash := hash(token)
+func (suc *UseCases) Delete(ctx context.Context, token string) error {
+	tokenHash := hash.Sha256(token)
 	return suc.Repository.Delete(ctx, tokenHash)
-}
-
-func hash(token string) string {
-	tokenHash := sha256.Sum256([]byte(token))
-	return base64.URLEncoding.EncodeToString(tokenHash[:])
 }

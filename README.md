@@ -99,9 +99,9 @@ App can send email to users
 
 Generate token and url to return to website and reset password. These token is verified only once, so the same token can't reuse
 
-### Smtp
+### Mailtrap
 
-App uses [Mailtrap](https://mailtrap.io) to send reset password email.
+App uses [Mailtrap](https://mailtrap.io) to send reset password email connection to SMTP server directly. There are other options using an API to send emails, they can be more customizable and interesting.
 
 ## Errors
 

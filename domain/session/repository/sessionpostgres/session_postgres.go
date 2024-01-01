@@ -14,19 +14,18 @@ type SessionRepository struct {
 }
 
 const (
-	updateSessionQuery      = "UPDATE sessions SET token_hash = $2 WHERE user_id = $1 RETURNING id"
-	insertSessionQuery      = "INSERT INTO sessions (user_id, token_hash) VALUES ($1, $2) RETURNING id"
-	deleteSessionQuery      = "DELETE FROM sessions WHERE token_hash = $1"
-	getUserByTokenHashQUery = "SELECT id, email, password_hash FROM users u JOIN sessions s ON s.user_id = u.id WHERE s.token_hash = $1"
+	updateSessionQuery = "UPDATE sessions SET token_hash = $2 WHERE user_id = $1 RETURNING id"
+	insertSessionQuery = "INSERT INTO sessions (user_id, token_hash) VALUES ($1, $2) RETURNING id"
+	deleteSessionQuery = "DELETE FROM sessions WHERE token_hash = $1"
 )
 
 func (sr *SessionRepository) Save(ctx context.Context, user *entity.User, session *entity.Session) error {
 	row := sr.DB.QueryRowContext(ctx, updateSessionQuery, user.ID, session.TokenHash)
 	var id int
-	err := row.Scan(id)
+	err := row.Scan(&id)
 	if err == sql.ErrNoRows {
-		row = sr.DB.QueryRowContext(context.Background(), insertSessionQuery, session.UserID, session.TokenHash)
-		err = row.Scan(id)
+		row = sr.DB.QueryRowContext(ctx, insertSessionQuery, session.UserID, session.TokenHash)
+		err = row.Scan(&id)
 		if err != nil {
 			return fmt.Errorf("insert session hash: %w", err)
 		}
@@ -36,6 +35,8 @@ func (sr *SessionRepository) Save(ctx context.Context, user *entity.User, sessio
 	}
 	return nil
 }
+
+const getUserByTokenHashQUery = "SELECT u.id, u.email, u.password_hash FROM users u JOIN sessions s ON s.user_id = u.id WHERE s.token_hash = $1"
 
 func (sr *SessionRepository) GetUserByTokenHash(ctx context.Context, tokenHash string) (*entity.User, error) {
 	var user entity.User

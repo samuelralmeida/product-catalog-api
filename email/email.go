@@ -1,16 +1,18 @@
 package email
 
 import (
+	"context"
 	"fmt"
+	"io"
 
 	"github.com/go-mail/mail/v2"
 )
 
 const (
-	DefaultSender = "support@catalogapi.com"
+	defaultSender = "support@catalogapi.com"
 )
 
-type Email struct {
+type email struct {
 	From      string
 	To        []string
 	Subject   string
@@ -18,29 +20,27 @@ type Email struct {
 	HTML      string
 }
 
-type Dialer struct {
-	dialer *mail.Dialer
+type UseCases struct {
+	Dialer *mail.Dialer
+	Writer io.Writer
 }
 
-func NewDial(dialer *mail.Dialer) *Dialer {
-	return &Dialer{dialer: dialer}
-}
-
-func (d *Dialer) ForgotPassword(to, resetUrl string) error {
-	email := Email{
+func (uc *UseCases) SendForgotPassword(ctx context.Context, to string, resetUrl string) error {
+	mail := email{
 		Subject:   "Reset your password",
 		To:        []string{to},
 		Plaintext: "To reset your password, please visit the following link: " + resetUrl,
 		HTML:      `<p>To reset your password, please visit the following link: <a href="` + resetUrl + `">` + resetUrl + `</a></p>`,
 	}
-	err := d.Send(email)
+
+	err := uc.send(mail)
 	if err != nil {
 		return fmt.Errorf("forgot password email: %w", err)
 	}
 	return nil
 }
 
-func (d *Dialer) Send(email Email) error {
+func (uc *UseCases) send(email email) error {
 	msg := mail.NewMessage()
 
 	msg.SetHeader("To", email.To...)
@@ -58,20 +58,24 @@ func (d *Dialer) Send(email Email) error {
 		msg.SetBody("text/html", email.HTML)
 	}
 
-	err := d.dialer.DialAndSend(msg)
+	if uc.Writer != nil {
+		msg.WriteTo(uc.Writer)
+	}
+
+	err := uc.Dialer.DialAndSend(msg)
 	if err != nil {
 		return fmt.Errorf("send email: %w", err)
 	}
 	return nil
 }
 
-func setFrom(msg *mail.Message, email Email) {
+func setFrom(msg *mail.Message, email email) {
 	var from string
 	switch {
 	case email.From != "":
 		from = email.From
 	default:
-		from = DefaultSender
+		from = defaultSender
 	}
 	msg.SetHeader("From", from)
 }

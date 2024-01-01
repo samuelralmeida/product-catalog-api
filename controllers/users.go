@@ -12,7 +12,7 @@ import (
 	"github.com/samuelralmeida/product-catalog-api/models"
 )
 
-type User struct {
+type Users struct {
 	Templates struct {
 		Signup         Template
 		Signin         Template
@@ -26,7 +26,7 @@ type User struct {
 	EmailService         *models.EmailService
 }
 
-func (u User) SignUp(w http.ResponseWriter, r *http.Request) {
+func (u Users) SignUp(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		Email     string
 		CSRFField template.HTML
@@ -36,7 +36,7 @@ func (u User) SignUp(w http.ResponseWriter, r *http.Request) {
 	u.Templates.Signup.Execute(w, r, data)
 }
 
-func (u User) Create(w http.ResponseWriter, r *http.Request) {
+func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 	// TODO: use go-playground/form to parse data request
 	// TODO: use go-playground/validator to validate data
 
@@ -65,7 +65,7 @@ func (u User) Create(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/users/me", http.StatusFound)
 }
 
-func (u User) SignIn(w http.ResponseWriter, r *http.Request) {
+func (u Users) SignIn(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		Email string
 	}
@@ -73,7 +73,7 @@ func (u User) SignIn(w http.ResponseWriter, r *http.Request) {
 	u.Templates.Signin.Execute(w, r, data)
 }
 
-func (u User) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
+func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		Email    string
 		Password string
@@ -97,12 +97,12 @@ func (u User) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/users/me", http.StatusFound)
 }
 
-func (u User) CurrentUser(w http.ResponseWriter, r *http.Request) {
+func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	user := context.User(r.Context())
 	fmt.Fprintf(w, "Current user: %v\n", user.Email)
 }
 
-func (u User) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
+func (u Users) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
 	token, err := readCookie(r, cookieSession)
 	if err != nil {
 		http.Redirect(w, r, "/signin", http.StatusFound)
@@ -119,7 +119,7 @@ func (u User) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/signin", http.StatusFound)
 }
 
-func (u User) ForgotPassword(w http.ResponseWriter, r *http.Request) {
+func (u Users) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		Email string
 	}
@@ -127,7 +127,7 @@ func (u User) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	u.Templates.ForgotPassword.Execute(w, r, data)
 }
 
-func (u User) ProcessForgotPassword(w http.ResponseWriter, r *http.Request) {
+func (u Users) ProcessForgotPassword(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		Email string
 	}
@@ -153,7 +153,7 @@ func (u User) ProcessForgotPassword(w http.ResponseWriter, r *http.Request) {
 	u.Templates.CheckYourEmail.Execute(w, r, data)
 }
 
-func (u User) ResetPassword(w http.ResponseWriter, r *http.Request) {
+func (u Users) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		Token string
 	}
@@ -161,7 +161,7 @@ func (u User) ResetPassword(w http.ResponseWriter, r *http.Request) {
 	u.Templates.ResetPassword.Execute(w, r, data)
 }
 
-func (u User) ProcessResetPassword(w http.ResponseWriter, r *http.Request) {
+func (u Users) ProcessResetPassword(w http.ResponseWriter, r *http.Request) {
 	var data struct {
 		Token    string
 		Password string

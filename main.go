@@ -48,7 +48,7 @@ func main() {
 	tpl = views.MustParseFS(templates.FS, "layout-page.gohtml", "product.gohtml")
 	r.Get("/product", controllers.ProductHandler(tpl))
 
-	userController := controllers.User{UserService: &userService, SessionService: &sessionService, EmailService: emailService, PasswordResetService: &passwordResetService}
+	userController := controllers.Users{UserService: &userService, SessionService: &sessionService, EmailService: emailService, PasswordResetService: &passwordResetService}
 	userController.Templates.Signup = views.MustParseFS(templates.FS, "layout-page.gohtml", "signup.gohtml")
 	userController.Templates.Signin = views.MustParseFS(templates.FS, "layout-page.gohtml", "signin.gohtml")
 	userController.Templates.ForgotPassword = views.MustParseFS(templates.FS, "layout-page.gohtml", "forgot-pw.gohtml")
@@ -72,8 +72,8 @@ func main() {
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) { http.Error(w, "Page not found", http.StatusNotFound) })
 
-	fmt.Printf("Starting the server on %s...\n", config.Server.Address)
-	err = http.ListenAndServe(config.Server.Address, r)
+	fmt.Printf("Starting the server on %s...\n", config.Server.Port)
+	err = http.ListenAndServe(config.Server.Port, r)
 	if err != nil {
 		panic(err)
 	}

@@ -30,7 +30,8 @@ type csrf struct {
 }
 
 type server struct {
-	Address string
+	Port string
+	Url  string
 }
 
 type Config struct {
@@ -65,7 +66,8 @@ func Load() *Config {
 			Secure: false,
 		},
 		Server: server{
-			Address: os.Getenv("SERVER_ADDRESS"),
+			Port: os.Getenv("SERVER_PORT"),
+			Url:  os.Getenv("SERVER_URL"),
 		},
 	}
 
