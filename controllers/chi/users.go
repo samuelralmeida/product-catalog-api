@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/samuelralmeida/product-catalog-api/controllers"
 	"github.com/samuelralmeida/product-catalog-api/internal/context"
-	"github.com/samuelralmeida/product-catalog-api/internal/controllers"
 	"github.com/samuelralmeida/product-catalog-api/internal/cookie"
 )
 

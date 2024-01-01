@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/samuelralmeida/product-catalog-api/env"
+	"github.com/samuelralmeida/product-catalog-api/internal/env"
 )
 
 type Config struct {

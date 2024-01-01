@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gorilla/csrf"
-	"github.com/samuelralmeida/product-catalog-api/internal/controllers"
+	"github.com/samuelralmeida/product-catalog-api/controllers"
 )
 
 func Handlers(controller *controllers.Controller, templates controllers.HtmlTemplates) *chi.Mux {

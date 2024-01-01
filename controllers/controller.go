@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/samuelralmeida/product-catalog-api/entity"
-	"github.com/samuelralmeida/product-catalog-api/env"
+	"github.com/samuelralmeida/product-catalog-api/internal/env"
 	"github.com/samuelralmeida/product-catalog-api/templates"
 )
 

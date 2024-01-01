@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/samuelralmeida/product-catalog-api/database/postgres"
-	"github.com/samuelralmeida/product-catalog-api/env"
+	"github.com/samuelralmeida/product-catalog-api/internal/env"
 	"github.com/samuelralmeida/product-catalog-api/migrations"
 
 	"github.com/pressly/goose/v3"

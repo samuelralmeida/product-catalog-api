@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/samuelralmeida/product-catalog-api/controllers"
+	"github.com/samuelralmeida/product-catalog-api/controllers/chi"
 	"github.com/samuelralmeida/product-catalog-api/database"
 	"github.com/samuelralmeida/product-catalog-api/database/postgres"
 	"github.com/samuelralmeida/product-catalog-api/domain/session"
@@ -12,11 +14,9 @@ import (
 	"github.com/samuelralmeida/product-catalog-api/domain/user/repository/userpostgres"
 	"github.com/samuelralmeida/product-catalog-api/email"
 	"github.com/samuelralmeida/product-catalog-api/email/mailtrap"
-	"github.com/samuelralmeida/product-catalog-api/env"
 	"github.com/samuelralmeida/product-catalog-api/internal/api"
-	"github.com/samuelralmeida/product-catalog-api/internal/controllers"
-	"github.com/samuelralmeida/product-catalog-api/internal/controllers/chi"
-	"github.com/samuelralmeida/product-catalog-api/service"
+	"github.com/samuelralmeida/product-catalog-api/internal/env"
+	"github.com/samuelralmeida/product-catalog-api/services"
 )
 
 func main() {
@@ -51,7 +51,7 @@ func main() {
 
 	// services
 
-	userService := &service.UserService{
+	userService := &services.UserService{
 		UserUseCases:    userUseCase,
 		SessionUseCases: sessionUseCase,
 		MailUseCase:     &mailUseCases,

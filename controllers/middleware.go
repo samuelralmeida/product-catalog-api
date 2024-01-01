@@ -1,25 +1,27 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
-	"github.com/samuelralmeida/product-catalog-api/context"
-	"github.com/samuelralmeida/product-catalog-api/models"
+	"github.com/samuelralmeida/product-catalog-api/internal/context"
+	"github.com/samuelralmeida/product-catalog-api/internal/cookie"
 )
 
 type UserMiddleware struct {
-	SessionService *models.SessionService
+	UserService UserService
 }
 
 func (umw UserMiddleware) SetUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token, err := readCookie(r, cookieSession)
+		token, err := cookie.ReadCookie(r, cookie.CookieSession)
 		if err != nil {
 			next.ServeHTTP(w, r)
 			return
 		}
-		user, err := umw.SessionService.User(token)
+		user, err := umw.UserService.User(r.Context(), token)
 		if err != nil {
+			log.Println("user in set user middleware: %w", err)
 			next.ServeHTTP(w, r)
 			return
 		}

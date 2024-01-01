@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/samuelralmeida/product-catalog-api/env"
+	"github.com/samuelralmeida/product-catalog-api/internal/env"
 )
 
 const TIMEOUT = 30 * time.Second
