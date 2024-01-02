@@ -24,6 +24,10 @@ func Handlers(controller *controllers.Controller, templates controllers.HtmlTemp
 		Templates:   templates,
 	}
 
+	productHandler := Products{
+		ProductService: controller.ProductService,
+	}
+
 	r.Get("/", userHandler.Home)
 	r.Get("/signup", userHandler.SignUp)
 	r.Post("/users", userHandler.Create)
@@ -38,6 +42,10 @@ func Handlers(controller *controllers.Controller, templates controllers.HtmlTemp
 	r.Route("/users/me", func(r chi.Router) {
 		r.Use(umw.RequireUser)
 		r.Get("/", userHandler.CurrentUser)
+	})
+
+	r.Route("/products", func(r chi.Router) {
+		r.Get("/", productHandler.List)
 	})
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {

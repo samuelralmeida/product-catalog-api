@@ -8,6 +8,8 @@ import (
 	"github.com/samuelralmeida/product-catalog-api/controllers/chi"
 	"github.com/samuelralmeida/product-catalog-api/database"
 	"github.com/samuelralmeida/product-catalog-api/database/postgres"
+	"github.com/samuelralmeida/product-catalog-api/domain/product"
+	"github.com/samuelralmeida/product-catalog-api/domain/product/repository/productpostgres"
 	"github.com/samuelralmeida/product-catalog-api/domain/session"
 	"github.com/samuelralmeida/product-catalog-api/domain/session/repository/sessionpostgres"
 	"github.com/samuelralmeida/product-catalog-api/domain/user"
@@ -43,11 +45,13 @@ func main() {
 
 	userRepository := &userpostgres.UserRepository{DB: db}
 	sessionRepository := &sessionpostgres.SessionRepository{DB: db}
+	productRepository := &productpostgres.ProductRepository{DB: db}
 
 	// use cases
 
 	userUseCase := &user.UseCases{Repository: userRepository}
 	sessionUseCase := &session.UseCases{Repository: sessionRepository}
+	productUseCase := &product.UseCase{Repository: productRepository}
 
 	// services
 
@@ -58,9 +62,17 @@ func main() {
 		Config:          config,
 	}
 
+	productService := &services.ProductService{
+		ProductUseCases: productUseCase,
+	}
+
 	// controller
 
-	controller := &controllers.Controller{Config: config, UserService: userService}
+	controller := &controllers.Controller{
+		Config:         config,
+		UserService:    userService,
+		ProductService: productService,
+	}
 
 	// template
 

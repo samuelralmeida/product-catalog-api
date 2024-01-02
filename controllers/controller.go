@@ -18,9 +18,14 @@ type UserService interface {
 	User(ctx context.Context, sessionToken string) (*entity.User, error)
 }
 
+type ProducService interface {
+	List(ctx context.Context) (*[]entity.Product, error)
+}
+
 type Controller struct {
-	UserService UserService
-	Config      *env.Config
+	UserService    UserService
+	ProductService ProducService
+	Config         *env.Config
 }
 
 type Template interface {
