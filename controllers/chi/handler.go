@@ -14,7 +14,6 @@ func Handlers(controller *controllers.Controller, templates controllers.HtmlTemp
 	r.Use(middleware.Logger)
 
 	csrfMiddleware := csrf.Protect([]byte(controller.Config.Csrf.Key))
-	r.Use(csrfMiddleware)
 
 	umw := controllers.UserMiddleware{UserService: controller.UserService}
 	r.Use(umw.SetUser)
@@ -28,24 +27,30 @@ func Handlers(controller *controllers.Controller, templates controllers.HtmlTemp
 		ProductService: controller.ProductService,
 	}
 
-	r.Get("/", userHandler.Home)
-	r.Get("/signup", userHandler.SignUp)
-	r.Post("/users", userHandler.Create)
-	r.Get("/signin", userHandler.SignIn)
-	r.Post("/signin", userHandler.ProcessSignIn)
-	r.Post("/signout", userHandler.ProcessSignOut)
-	r.Get("/forgot-pw", userHandler.ForgotPassword)
-	r.Post("/forgot-pw", userHandler.ProcessForgotPassword)
-	r.Get("/reset-pw", userHandler.ResetPassword)
-	r.Post("/reset-pw", userHandler.ProcessResetPassword)
+	r.Route("/users", func(r chi.Router) {
+		r.Use(csrfMiddleware)
 
-	r.Route("/users/me", func(r chi.Router) {
-		r.Use(umw.RequireUser)
-		r.Get("/", userHandler.CurrentUser)
+		r.Get("/", userHandler.Home)
+		r.Post("/", userHandler.Create)
+		r.Get("/signup", userHandler.SignUp)
+		r.Get("/signin", userHandler.SignIn)
+		r.Post("/signin", userHandler.ProcessSignIn)
+		r.Post("/signout", userHandler.ProcessSignOut)
+		r.Get("/forgot-pw", userHandler.ForgotPassword)
+		r.Post("/forgot-pw", userHandler.ProcessForgotPassword)
+		r.Get("/reset-pw", userHandler.ResetPassword)
+		r.Post("/reset-pw", userHandler.ProcessResetPassword)
+
+		r.Group(func(r chi.Router) {
+			r.Use(umw.RequireUser)
+			r.Get("/me", userHandler.CurrentUser)
+		})
+
 	})
 
 	r.Route("/products", func(r chi.Router) {
 		r.Get("/", productHandler.List)
+		r.Post("/", productHandler.Create)
 	})
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {

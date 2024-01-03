@@ -33,6 +33,30 @@ func (pr *ProductRepository) Products(ctx context.Context) (*[]entity.Product, e
 	return &products, nil
 }
 
+const insertProductQuery = `
+	INSERT INTO products.products (
+		gross_weight_g, height_mm, length_mm, net_weight_g, quantity, width_mm, manufacturer_id,
+		brand, description, name, ncm, presentation, storage_condition,
+		unit_of_measurement_symbol, group_id, umbrella_item_id
+	)
+	VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+	RETURNING id;
+`
+
+func (pr *ProductRepository) Create(ctx context.Context, product *entity.Product) error {
+	err := pr.DB.QueryRowContext(ctx, insertProductQuery,
+		product.GrossWeightG, product.HeightMM, product.LengthMM, product.NetWeightG, product.Quantity, product.WidthMM,
+		product.ManufacturerID, product.Brand, product.Description, product.Name, product.Ncm, product.Presentation,
+		product.StorageCondition, product.UnitOfMeasurementSymbol, product.GroupID, product.UmbrellaItemID,
+	).Scan(&product.ID)
+
+	if err != nil {
+		return fmt.Errorf("insert product: %w", err)
+	}
+
+	return nil
+}
+
 /*
 func (p *ProductPostgresql) ProductByGtin(gtin string) (*domain.Product, error) {
 	var prod domain.Product

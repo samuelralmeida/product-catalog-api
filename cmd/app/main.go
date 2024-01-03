@@ -8,6 +8,10 @@ import (
 	"github.com/samuelralmeida/product-catalog-api/controllers/chi"
 	"github.com/samuelralmeida/product-catalog-api/database"
 	"github.com/samuelralmeida/product-catalog-api/database/postgres"
+	"github.com/samuelralmeida/product-catalog-api/domain/manufacturer"
+	"github.com/samuelralmeida/product-catalog-api/domain/manufacturer/repository/manufacturerpostgres"
+	"github.com/samuelralmeida/product-catalog-api/domain/measurement"
+	"github.com/samuelralmeida/product-catalog-api/domain/measurement/repository/measurementpostgres"
 	"github.com/samuelralmeida/product-catalog-api/domain/product"
 	"github.com/samuelralmeida/product-catalog-api/domain/product/repository/productpostgres"
 	"github.com/samuelralmeida/product-catalog-api/domain/session"
@@ -46,12 +50,16 @@ func main() {
 	userRepository := &userpostgres.UserRepository{DB: db}
 	sessionRepository := &sessionpostgres.SessionRepository{DB: db}
 	productRepository := &productpostgres.ProductRepository{DB: db}
+	manufacturerRepository := &manufacturerpostgres.ManufacturerRepository{DB: db}
+	measurementRepository := &measurementpostgres.MeasurementRepository{DB: db}
 
 	// use cases
 
 	userUseCase := &user.UseCases{Repository: userRepository}
 	sessionUseCase := &session.UseCases{Repository: sessionRepository}
 	productUseCase := &product.UseCase{Repository: productRepository}
+	manufacturerUseCase := &manufacturer.UseCases{Repository: manufacturerRepository}
+	measurementUseCase := &measurement.UseCases{Repository: measurementRepository}
 
 	// services
 
@@ -63,7 +71,9 @@ func main() {
 	}
 
 	productService := &services.ProductService{
-		ProductUseCases: productUseCase,
+		ProductUseCases:      productUseCase,
+		ManufacturerUseCases: manufacturerUseCase,
+		MeasurementUseCases:  measurementUseCase,
 	}
 
 	// controller

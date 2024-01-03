@@ -20,6 +20,7 @@ type UserService interface {
 
 type ProducService interface {
 	List(ctx context.Context) (*[]entity.Product, error)
+	Create(ctx context.Context, product *entity.Product) error
 }
 
 type Controller struct {

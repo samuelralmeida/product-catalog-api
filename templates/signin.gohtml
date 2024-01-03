@@ -2,7 +2,7 @@
 <div class="py-12 flex justify-center">
     <div class="px-8 py-8 bg-white rounded shadow">
         <h1 class="pt-4 pb-8 text-center text-3xl font-bold text-gray-900">Welcome back</h1>
-        <form action="/signin" method="post">
+        <form action="/users/signin" method="post">
             <div class="hidden">{{ csrfField }}</div>
             <div class="py-2">
                 <label for="email" class="text-sm font-semibold text-gray-800">Email address</label>
@@ -23,10 +23,10 @@
             <div class="py-2 w-full flex justify-between">
                 <p class="text-xs text-gray-500">
                     Need an account?
-                    <a href="/signup" class="underline">Sign up</a>
+                    <a href="/users/signup" class="underline">Sign up</a>
                 </p>
                 <p class="text-xs text-gray-500">
-                    <a href="/forgot-pw" class="underline">Forgot your password?</a>
+                    <a href="/users/forgot-pw" class="underline">Forgot your password?</a>
                 </p>
             </div>
         </form>

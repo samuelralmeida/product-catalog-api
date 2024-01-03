@@ -16,7 +16,7 @@ type Users struct {
 }
 
 func (u Users) Home(w http.ResponseWriter, r *http.Request) {
-	u.Templates.Signup.Execute(w, r, nil)
+	u.Templates.Home.Execute(w, r, nil)
 }
 
 func (u Users) Create(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +40,7 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		log.Println(fmt.Errorf("create session: %w", err))
-		http.Redirect(w, r, "/signin", http.StatusFound)
+		http.Redirect(w, r, "/users/signin", http.StatusFound)
 		return
 	}
 
@@ -94,7 +94,7 @@ func (u Users) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
 	sessionToken, err := cookie.ReadCookie(r, cookie.CookieSession)
 	if err != nil {
 		log.Println(err)
-		http.Redirect(w, r, "/signin", http.StatusFound)
+		http.Redirect(w, r, "/users/signin", http.StatusFound)
 		return
 	}
 
@@ -108,7 +108,7 @@ func (u Users) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cookie.DeleteCookie(w, cookie.CookieSession)
-	http.Redirect(w, r, "/signin", http.StatusFound)
+	http.Redirect(w, r, "/users/signin", http.StatusFound)
 }
 
 func (u Users) ForgotPassword(w http.ResponseWriter, r *http.Request) {

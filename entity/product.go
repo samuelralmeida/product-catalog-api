@@ -1,5 +1,7 @@
 package entity
 
+import "time"
+
 type Product struct {
 	ID                      uint
 	Name                    string
@@ -24,8 +26,9 @@ type Product struct {
 }
 
 type Manufacturer struct {
-	ID   uint
-	Name string
+	ID        uint
+	Name      string
+	DeletedAt *time.Time
 }
 
 type ManufacturerProducts struct {
@@ -34,8 +37,9 @@ type ManufacturerProducts struct {
 }
 
 type Measurement struct {
-	Symbol string
-	Name   string
+	Symbol    string
+	Name      string
+	DeletedAt *time.Time
 }
 
 type Group struct {
