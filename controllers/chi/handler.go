@@ -27,6 +27,14 @@ func Handlers(controller *controllers.Controller, templates controllers.HtmlTemp
 		ProductService: controller.ProductService,
 	}
 
+	measurementHandler := Measurements{
+		MeasurementService: controller.MeasurementService,
+	}
+
+	manufactrerHandler := Manufacturers{
+		ManufacturerService: controller.ManufacturerService,
+	}
+
 	r.Route("/users", func(r chi.Router) {
 		r.Use(csrfMiddleware)
 
@@ -51,6 +59,19 @@ func Handlers(controller *controllers.Controller, templates controllers.HtmlTemp
 	r.Route("/products", func(r chi.Router) {
 		r.Get("/", productHandler.List)
 		r.Post("/", productHandler.Create)
+		r.Get("/{id}", productHandler.Product)
+	})
+
+	r.Route("/measurements", func(r chi.Router) {
+		r.Get("/", measurementHandler.List)
+		r.Post("/", measurementHandler.Create)
+		r.Get("/{symbol}", measurementHandler.Measurement)
+	})
+
+	r.Route("/manufcaturers", func(r chi.Router) {
+		r.Get("/", manufactrerHandler.List)
+		r.Post("/", manufactrerHandler.Create)
+		r.Get("/{id}", manufactrerHandler.Manufacturer)
 	})
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {

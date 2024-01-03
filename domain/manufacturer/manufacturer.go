@@ -9,6 +9,7 @@ import (
 type ManufacturerRepository interface {
 	Manufacturer(ctx context.Context, id uint) (*entity.Manufacturer, error)
 	Create(ctx context.Context, manufacturer *entity.Manufacturer) error
+	Manufacturers(ctx context.Context) (*[]entity.Manufacturer, error)
 }
 
 type UseCases struct {
@@ -21,4 +22,8 @@ func (uc *UseCases) Create(ctx context.Context, manufacturer *entity.Manufacture
 
 func (uc *UseCases) Manufacturer(ctx context.Context, id uint) (*entity.Manufacturer, error) {
 	return uc.Repository.Manufacturer(ctx, id)
+}
+
+func (uc *UseCases) Manufacturers(ctx context.Context) (*[]entity.Manufacturer, error) {
+	return uc.Repository.Manufacturers(ctx)
 }

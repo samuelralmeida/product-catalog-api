@@ -79,9 +79,11 @@ func main() {
 	// controller
 
 	controller := &controllers.Controller{
-		Config:         config,
-		UserService:    userService,
-		ProductService: productService,
+		Config:              config,
+		UserService:         userService,
+		ProductService:      productService,
+		MeasurementService:  productService,
+		ManufacturerService: productService,
 	}
 
 	// template

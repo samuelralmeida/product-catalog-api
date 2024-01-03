@@ -8,6 +8,7 @@ import (
 
 type MeasurementRepository interface {
 	Measurement(ctx context.Context, symbol string) (*entity.Measurement, error)
+	Measurements(ctx context.Context) (*[]entity.Measurement, error)
 	Create(ctx context.Context, measurement *entity.Measurement) error
 }
 
@@ -21,4 +22,8 @@ func (uc *UseCases) Create(ctx context.Context, measurement *entity.Measurement)
 
 func (uc *UseCases) Measurement(ctx context.Context, symbol string) (*entity.Measurement, error) {
 	return uc.Repository.Measurement(ctx, symbol)
+}
+
+func (uc *UseCases) Measurements(ctx context.Context) (*[]entity.Measurement, error) {
+	return uc.Repository.Measurements(ctx)
 }

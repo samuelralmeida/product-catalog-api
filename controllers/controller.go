@@ -18,15 +18,30 @@ type UserService interface {
 	User(ctx context.Context, sessionToken string) (*entity.User, error)
 }
 
-type ProducService interface {
-	List(ctx context.Context) (*[]entity.Product, error)
-	Create(ctx context.Context, product *entity.Product) error
+type ProductService interface {
+	Products(ctx context.Context) (*[]entity.Product, error)
+	CreateProduct(ctx context.Context, product *entity.Product) error
+	Product(ctx context.Context, id uint) (*entity.Product, error)
+}
+
+type MeasurementService interface {
+	Measurements(ctx context.Context) (*[]entity.Measurement, error)
+	CreateMeasurement(ctx context.Context, measurement *entity.Measurement) error
+	Measurement(ctx context.Context, sybol string) (*entity.Measurement, error)
+}
+
+type ManufacturerService interface {
+	Manufacturers(ctx context.Context) (*[]entity.Manufacturer, error)
+	CreateManufacturer(ctx context.Context, manufactrer *entity.Manufacturer) error
+	Manufacturer(ctx context.Context, id uint) (*entity.Manufacturer, error)
 }
 
 type Controller struct {
-	UserService    UserService
-	ProductService ProducService
-	Config         *env.Config
+	UserService         UserService
+	ProductService      ProductService
+	MeasurementService  MeasurementService
+	ManufacturerService ManufacturerService
+	Config              *env.Config
 }
 
 type Template interface {

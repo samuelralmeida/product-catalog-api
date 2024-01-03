@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -12,16 +11,16 @@ import (
 	"github.com/samuelralmeida/product-catalog-api/controllers/dto"
 )
 
-type Products struct {
-	ProductService controllers.ProductService
+type Measurements struct {
+	MeasurementService controllers.MeasurementService
 }
 
-func (p Products) List(w http.ResponseWriter, r *http.Request) {
+func (m Measurements) List(w http.ResponseWriter, r *http.Request) {
 	// TODO: use go-playground/form to parse data request
 	// TODO: use go-playground/validator to validate data
 
 	ctx := r.Context()
-	products, err := p.ProductService.Products(ctx)
+	products, err := m.MeasurementService.Measurements(ctx)
 	if err != nil {
 		log.Println("list products: %w", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
@@ -31,46 +30,39 @@ func (p Products) List(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, products)
 }
 
-func (p Products) Create(w http.ResponseWriter, r *http.Request) {
+func (m Measurements) Create(w http.ResponseWriter, r *http.Request) {
 	// TODO: use go-playground/form to parse data request
 	// TODO: use go-playground/validator to validate data
 
-	var requestBody dto.InsertProductRequest
+	var requestBody dto.InsertMeasurementRequest
 	err := json.NewDecoder(r.Body).Decode(&requestBody)
 	if err != nil {
-		log.Println("decode create product request:", err)
-		http.Error(w, "internal error", http.StatusBadRequest)
-		return
-	}
-
-	ctx := r.Context()
-	product := requestBody.ToEntity()
-	err = p.ProductService.CreateProduct(ctx, product)
-	if err != nil {
-		log.Println("create product:", err)
-		http.Error(w, "internal error", http.StatusInternalServerError)
-		return
-	}
-
-	render.JSON(w, r, product)
-}
-
-func (p Products) Product(w http.ResponseWriter, r *http.Request) {
-	// TODO: use go-playground/form to parse data request
-	// TODO: use go-playground/validator to validate data
-
-	rawId := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(rawId)
-	if err != nil {
-		log.Println("parse product id:", err)
+		log.Println("decode create measurement request:", err)
 		http.Error(w, "bad request error", http.StatusBadRequest)
 		return
 	}
 
 	ctx := r.Context()
-	product, err := p.ProductService.Product(ctx, uint(id))
+	measurement := requestBody.ToEntity()
+	err = m.MeasurementService.CreateMeasurement(ctx, measurement)
 	if err != nil {
-		log.Println("get product by id:", err)
+		log.Println("create measurement:", err)
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	render.JSON(w, r, measurement)
+}
+
+func (m Measurements) Measurement(w http.ResponseWriter, r *http.Request) {
+	// TODO: use go-playground/form to parse data request
+	// TODO: use go-playground/validator to validate data
+
+	symbol := chi.URLParam(r, "symbol")
+	ctx := r.Context()
+	product, err := m.MeasurementService.Measurement(ctx, symbol)
+	if err != nil {
+		log.Println("get measurement by symbol:", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

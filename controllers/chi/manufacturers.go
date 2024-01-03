@@ -12,18 +12,18 @@ import (
 	"github.com/samuelralmeida/product-catalog-api/controllers/dto"
 )
 
-type Products struct {
-	ProductService controllers.ProductService
+type Manufacturers struct {
+	ManufacturerService controllers.ManufacturerService
 }
 
-func (p Products) List(w http.ResponseWriter, r *http.Request) {
+func (m Manufacturers) List(w http.ResponseWriter, r *http.Request) {
 	// TODO: use go-playground/form to parse data request
 	// TODO: use go-playground/validator to validate data
 
 	ctx := r.Context()
-	products, err := p.ProductService.Products(ctx)
+	products, err := m.ManufacturerService.Manufacturers(ctx)
 	if err != nil {
-		log.Println("list products: %w", err)
+		log.Println("list manufacturers: %w", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
@@ -31,31 +31,31 @@ func (p Products) List(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, products)
 }
 
-func (p Products) Create(w http.ResponseWriter, r *http.Request) {
+func (m Manufacturers) Create(w http.ResponseWriter, r *http.Request) {
 	// TODO: use go-playground/form to parse data request
 	// TODO: use go-playground/validator to validate data
 
-	var requestBody dto.InsertProductRequest
+	var requestBody dto.InsertManufaturerRequest
 	err := json.NewDecoder(r.Body).Decode(&requestBody)
 	if err != nil {
-		log.Println("decode create product request:", err)
-		http.Error(w, "internal error", http.StatusBadRequest)
+		log.Println("decode create manufacturers request:", err)
+		http.Error(w, "bad request error", http.StatusBadRequest)
 		return
 	}
 
 	ctx := r.Context()
-	product := requestBody.ToEntity()
-	err = p.ProductService.CreateProduct(ctx, product)
+	manufacturer := requestBody.ToEntity()
+	err = m.ManufacturerService.CreateManufacturer(ctx, manufacturer)
 	if err != nil {
-		log.Println("create product:", err)
+		log.Println("create measurement:", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
 
-	render.JSON(w, r, product)
+	render.JSON(w, r, manufacturer)
 }
 
-func (p Products) Product(w http.ResponseWriter, r *http.Request) {
+func (m Manufacturers) Manufacturer(w http.ResponseWriter, r *http.Request) {
 	// TODO: use go-playground/form to parse data request
 	// TODO: use go-playground/validator to validate data
 
@@ -68,7 +68,7 @@ func (p Products) Product(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	product, err := p.ProductService.Product(ctx, uint(id))
+	product, err := m.ManufacturerService.Manufacturer(ctx, uint(id))
 	if err != nil {
 		log.Println("get product by id:", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)

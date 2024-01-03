@@ -57,6 +57,30 @@ func (pr *ProductRepository) Create(ctx context.Context, product *entity.Product
 	return nil
 }
 
+const selectProductByIdQuery = `
+	SELECT
+		id, gross_weight_g, height_mm, length_mm, net_weight_g, quantity,
+		width_mm, manufacturer_id, brand, description, name, ncm, presentation,
+		storage_condition, unit_of_measurement_symbol, group_id, umbrella_item_id
+	FROM products.products
+	WHERE id = $1
+`
+
+func (pr *ProductRepository) Product(ctx context.Context, id uint) (*entity.Product, error) {
+	var product entity.Product
+	err := pr.DB.QueryRowContext(ctx, selectProductByIdQuery, id).Scan(
+		&product.ID, &product.GrossWeightG, &product.HeightMM, &product.LengthMM, &product.NetWeightG, &product.Quantity,
+		&product.WidthMM, &product.ManufacturerID, &product.Brand, &product.Description, &product.Name, &product.Ncm,
+		&product.Presentation, &product.StorageCondition, &product.UnitOfMeasurementSymbol, &product.GroupID, &product.UmbrellaItemID,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("get product by id: %w", err)
+	}
+
+	return &product, nil
+}
+
 /*
 func (p *ProductPostgresql) ProductByGtin(gtin string) (*domain.Product, error) {
 	var prod domain.Product

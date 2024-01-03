@@ -23,7 +23,7 @@ type InsertProductRequest struct {
 	UmbrellaItemID          *uint  `json:"umbrella_item_id"`
 }
 
-func (r *InsertProductRequest) ToProduct() *entity.Product {
+func (r *InsertProductRequest) ToEntity() *entity.Product {
 	return &entity.Product{
 		Name:                    r.Name,
 		Description:             r.Description,

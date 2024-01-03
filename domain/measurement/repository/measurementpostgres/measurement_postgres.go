@@ -13,7 +13,7 @@ type MeasurementRepository struct {
 	DB database.Database
 }
 
-const selectMeasurementBySymbolQuery = "select symbol, name from products.units_of_measurement where symbol = '$1'"
+const selectMeasurementBySymbolQuery = "select symbol, name from products.units_of_measurement where symbol = $1"
 
 func (mr *MeasurementRepository) Measurement(ctx context.Context, symbol string) (*entity.Measurement, error) {
 	var measurement entity.Measurement
@@ -40,4 +40,25 @@ func (mr *MeasurementRepository) Create(ctx context.Context, measurement *entity
 	}
 
 	return nil
+}
+
+const selectMeasurementsQuery = "select symbol, name from products.units_of_measurement"
+
+func (mr *MeasurementRepository) Measurements(ctx context.Context) (*[]entity.Measurement, error) {
+	var measurements []entity.Measurement
+	rows, err := mr.DB.QueryContext(ctx, selectMeasurementsQuery)
+	if err != nil {
+		return nil, fmt.Errorf("select measurements: %w", err)
+	}
+
+	for rows.Next() {
+		var measurement entity.Measurement
+		err := rows.Scan(&measurement.Symbol, &measurement.Name)
+		if err != nil {
+			return nil, fmt.Errorf("scan measurements: %w", err)
+		}
+		measurements = append(measurements, measurement)
+	}
+
+	return &measurements, nil
 }
